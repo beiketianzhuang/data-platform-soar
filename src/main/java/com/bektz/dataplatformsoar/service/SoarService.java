@@ -2,6 +2,7 @@ package com.bektz.dataplatformsoar.service;
 
 import com.bektz.dataplatformsoar.req.SqlVerifyReq;
 import com.bektz.dataplatformsoar.resp.SqlVerifyResp;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -13,9 +14,13 @@ import java.util.List;
 @Service
 public class SoarService {
 
+    private static final String CMD = "%s/soar '-query=%s'";
+
+    @Value("${soar_configs.execuable_path}")
+    private String soarPath;
+
     public SqlVerifyResp verify(SqlVerifyReq sqlVerifyReq) {
-        String soar = System.getenv("soar");
-        String[] cmds = {"/bin/sh","-c","cd /Users/chenlang/work/src/github.com/XiaoMi/soar && echo 'select * from alert' | ./soar"};
+        String[] cmds = {"/bin/sh", "-c", String.format(CMD, soarPath, sqlVerifyReq.getSql())};
         List<String> processList = new ArrayList<>();
         Process process;
         try {
@@ -28,8 +33,6 @@ public class SoarService {
             input.close();
         } catch (IOException e) {
         }
-
-        processList.remove("");
         return SqlVerifyResp.builder().verifyInfo(processList.toString()).build();
     }
 }
