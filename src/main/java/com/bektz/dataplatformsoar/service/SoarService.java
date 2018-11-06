@@ -33,6 +33,7 @@ public class SoarService {
             input.close();
         } catch (IOException e) {
         }
-        return SqlVerifyResp.builder().verifyInfo(processList.toString()).build();
+        String sqlInfo = String.join("<br>", processList);
+        return SqlVerifyResp.builder().verifyInfo(sqlInfo).build();
     }
 }
