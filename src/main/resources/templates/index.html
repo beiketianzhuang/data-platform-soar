@@ -1,26 +1,82 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Index</title>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/layui/css/layui.css" media="all">
+    <script src="/layui/layui.js" charset="utf-8"></script>
+    <script src="/jquery.js"></script>
+    <!-- SockJS的客户端脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 </head>
-<script src="/jquery.js"></script>
-<!-- stomp协议的客户端脚本 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
-<!-- SockJS的客户端脚本 -->
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-<body onload="disconnect()">
-<div>
-    <div>
-        <button id="connect" onclick="connect();">连接</button>
-        <button id="disconnect" disabled="disabled" onclick="disconnect();">断开连接</button>
-    </div>
+<body>
+<div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
     <div id="conversationDiv">
         <label>输入sql:</label><input type="text" id="sql" name="sql"/>
-        <button id="sendSql" onclick="sendSql();">发送</button>
-        <p id="response"></p>
+        <!--<p id="response"></p>-->
     </div>
+    <button id="sendSql"  onclick="sendSql();" class="layui-btn">离线分析</button>
+    <button id="send" data-method="notice" onclick="sendSql();" class="layui-btn">在线分析</button>
 </div>
 
-<script type="text/javascript">
+<!--<div class="layui-tab layui-tab-card">-->
+    <!--<ul class="layui-tab-title">-->
+        <!--<li class="layui-this">分析结果</li>-->
+    <!--</ul>-->
+    <!--<div class="layui-tab-content" style="height: 500px; width: 400px">-->
+        <!--<div id="response" style="height: 500px; width: 400px;background-color: #7c8190;" class="layui-tab-item layui-show"></div>-->
+    <!--</div>-->
+<!--</div>-->
+<div class="layui-tab layui-tab-card" style="width: 290px;">
+    <ul class="layui-tab-title">
+        <li class="layui-this">分析结果</li>
+    </ul>
+    <div class="layui-tab-content" style="height: 100px;">
+        <div id="response" class="layui-tab-item layui-show">
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script>
+    layui.use('layer', function(){ //独立版的layer无需执行这一句
+        var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
+
+        //触发事件
+        var active = {
+            notice: function(){
+                //示范一个公告层
+                layer.open({
+                    type: 1
+                    ,title: false //不显示标题栏
+                    ,closeBtn: false
+                    ,area: ['500px', '600px']
+                    ,shade: 0.8
+                    ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                    ,btn: ['确认', '去优化']
+                    ,btnAlign: 'c'
+                    ,fixed: true
+                    ,moveType: 1 //拖拽模式，0或者1
+                    ,content: '<div id="response" style="background-color: #7c8190;"></div>'
+                    ,success: function(layero){
+                        var btn = layero.find('.layui-layer-btn');
+                        btn.find('.layui-layer-btn0').attr({
+                            href: '#'
+                        });
+                    }
+                });
+            }
+
+        };
+
+        $('#layerDemo .layui-btn').on('click', function(){
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+    });
+
     var ws = new WebSocket("ws://localhost:8080/myHandler");
     ws.onmessage = function (message) {
         console.log(message.data);
@@ -34,8 +90,6 @@
     function showResponse(message) {
         var response = $("#response");
         console.log(response)
-        response.html(message + "\r\n");
+        response.html(JSON.parse(message).verifyInfo + "\r\n");
     }
 </script>
-</body>
-</html>
