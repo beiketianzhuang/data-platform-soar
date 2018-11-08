@@ -17,7 +17,7 @@ import java.util.Map;
 @Service
 public class SoarService {
 
-    private static final String CMD = "%s/soar '-query=%s'";
+    private static final String CMD = "%s/soar '-query=%s' -report-type=html";
 
     @Value("${soar-configs.execuable_path}")
     private String soarPath;

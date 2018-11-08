@@ -9,34 +9,36 @@
     <!-- SockJS的客户端脚本 -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 </head>
+<style>
+    /*pre {*/
+        /*background: #40474e;*/
+    /*}*/
+</style>
 <body>
-<div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
-    <div id="conversationDiv">
-        <label>输入sql:</label><input type="text" id="sql" name="sql"/>
-        <!--<p id="response"></p>-->
+<div style="margin:0 auto;width:800px;height:800px">
+    <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
+        <div id="conversationDiv">
+            <textarea id="sql" style="width:400px;height:200px;resize: none;" placeholder="请输入sql语句"></textarea>
+            <!--<p id="response"></p>-->
+        </div>
+        <button id="sendSql"  onclick="sendSql();" class="layui-btn">离线分析</button>
+        <!--<button id="send" data-method="notice" onclick="sendSql();" class="layui-btn">在线分析</button>-->
     </div>
-    <button id="sendSql"  onclick="sendSql();" class="layui-btn">离线分析</button>
-    <button id="send" data-method="notice" onclick="sendSql();" class="layui-btn">在线分析</button>
-</div>
+    <div class="layui-tab layui-tab-card" style="background-color: #626564;width: 800px;height: 400px;overflow:scroll;">
+        <ul class="layui-tab-title">
+            <li class="layui-this">分析结果</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div  class="layui-tab-item layui-show" >
+                <div id="response">
 
-<!--<div class="layui-tab layui-tab-card">-->
-    <!--<ul class="layui-tab-title">-->
-        <!--<li class="layui-this">分析结果</li>-->
-    <!--</ul>-->
-    <!--<div class="layui-tab-content" style="height: 500px; width: 400px">-->
-        <!--<div id="response" style="height: 500px; width: 400px;background-color: #7c8190;" class="layui-tab-item layui-show"></div>-->
-    <!--</div>-->
-<!--</div>-->
-<div class="layui-tab layui-tab-card" style="width: 290px;">
-    <ul class="layui-tab-title">
-        <li class="layui-this">分析结果</li>
-    </ul>
-    <div class="layui-tab-content" style="height: 100px;">
-        <div id="response" class="layui-tab-item layui-show">
-
+                </div>
+            </div>
         </div>
     </div>
+
 </div>
+
 </body>
 </html>
 <script>

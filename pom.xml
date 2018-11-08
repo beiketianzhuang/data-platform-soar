@@ -6,7 +6,7 @@
 	<groupId>com.bektz</groupId>
 	<artifactId>data-platform-soar</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>data-platform-soar</name>
 	<description>Demo project for Spring Boot</description>
@@ -68,7 +68,35 @@
 	</dependencies>
 
 	<build>
+		<!--<finalName>${artifactId}</finalName>-->
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+				<executions>
+					<execution>
+						<id>copy-installed</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<artifactItems>
+						<artifactItem>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>${project.artifactId}</artifactId>
+							<version>${project.version}</version>
+							<type>${project.packaging}</type>
+							<overWrite>true</overWrite>
+							<destFileName>data-soar.jar</destFileName>
+						</artifactItem>
+					</artifactItems>
+					<outputDirectory>dev</outputDirectory>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

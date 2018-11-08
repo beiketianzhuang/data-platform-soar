@@ -17,8 +17,8 @@ ENV APP_NAME banyan
 ENV SPRING_PROFILES_ACTIVE dev
 
 RUN mkdir /tmp/deploy/
-COPY data-platform-soar.jar /tmp/deploy/app.jar
-COPY env.sh /tmp/deploy/
+COPY dev/data-soar.jar /tmp/deploy/app.jar
+COPY dev/env.sh /tmp/deploy/
 RUN bash /tmp/deploy/env.sh
 
 EXPOSE 8080 1099
