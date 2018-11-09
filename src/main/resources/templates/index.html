@@ -8,28 +8,30 @@
     <script src="/jquery.js"></script>
     <!-- SockJS的客户端脚本 -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js"></script>
 </head>
 <style>
-    /*pre {*/
-        /*background: #40474e;*/
-    /*}*/
 </style>
 <body>
-<div style="margin:0 auto;width:800px;height:800px">
+<div style="margin:0 auto;width:800px;">
     <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
         <div id="conversationDiv">
-            <textarea id="sql" style="width:400px;height:200px;resize: none;" placeholder="请输入sql语句"></textarea>
-            <!--<p id="response"></p>-->
+            <pre id="code" class="ace_editor" style="height:300px;margin-top: 100px" placeholder="请输入sql语句"><textarea class="ace_text-input"></textarea></pre>
+            <!--<textarea id="sql" style="width:800px;height:200px;resize: none;" placeholder="请输入sql语句"></textarea>-->
         </div>
-        <button id="sendSql"  onclick="sendSql();" class="layui-btn">离线分析</button>
+        <hr>
+        <button  onclick="sendSql();" class="layui-btn">在线分析</button>
+        <button style="margin-right: 20px" id="sendSql" onclick="sendSql();" class="layui-btn">离线分析
+        </button>
         <!--<button id="send" data-method="notice" onclick="sendSql();" class="layui-btn">在线分析</button>-->
     </div>
-    <div class="layui-tab layui-tab-card" style="background-color: #626564;width: 800px;height: 400px;overflow:scroll;">
+    <div class="layui-tab layui-tab-card"
+         style="background-color: #626564;width: 800px;height: 400px;overflow:scroll;margin-top: 100px">
         <ul class="layui-tab-title">
-            <li class="layui-this">分析结果</li>
+            <li>分析结果</li>
         </ul>
         <div class="layui-tab-content">
-            <div  class="layui-tab-item layui-show" >
+            <div class="layui-tab-item layui-show">
                 <div id="response">
 
                 </div>
@@ -42,26 +44,26 @@
 </body>
 </html>
 <script>
-    layui.use('layer', function(){ //独立版的layer无需执行这一句
+    layui.use('layer', function () { //独立版的layer无需执行这一句
         var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
 
         //触发事件
         var active = {
-            notice: function(){
+            notice: function () {
                 //示范一个公告层
                 layer.open({
                     type: 1
-                    ,title: false //不显示标题栏
-                    ,closeBtn: false
-                    ,area: ['500px', '600px']
-                    ,shade: 0.8
-                    ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
-                    ,btn: ['确认', '去优化']
-                    ,btnAlign: 'c'
-                    ,fixed: true
-                    ,moveType: 1 //拖拽模式，0或者1
-                    ,content: '<div id="response" style="background-color: #7c8190;"></div>'
-                    ,success: function(layero){
+                    , title: false //不显示标题栏
+                    , closeBtn: false
+                    , area: ['500px', '600px']
+                    , shade: 0.8
+                    , id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                    , btn: ['确认', '去优化']
+                    , btnAlign: 'c'
+                    , fixed: true
+                    , moveType: 1 //拖拽模式，0或者1
+                    , content: '<div id="response" style="background-color: #7c8190;"></div>'
+                    , success: function (layero) {
                         var btn = layero.find('.layui-layer-btn');
                         btn.find('.layui-layer-btn0').attr({
                             href: '#'
@@ -72,7 +74,7 @@
 
         };
 
-        $('#layerDemo .layui-btn').on('click', function(){
+        $('#layerDemo .layui-btn').on('click', function () {
             var othis = $(this), method = othis.data('method');
             active[method] ? active[method].call(this, othis) : '';
         });
@@ -84,14 +86,46 @@
         console.log(message.data);
         showResponse(message.data);
     }
+
     function sendSql() {
         var sql = $('#sql').val();
         ws.send(sql);
+        console.log(ws);
     }
 
     function showResponse(message) {
+        var converter = new showdown.Converter();
+        var text = JSON.parse(message).verifyInfo;
+        var html = converter.makeHtml(text);
         var response = $("#response");
-        console.log(response)
-        response.html(JSON.parse(message).verifyInfo + "\r\n");
+        console.log(JSON.parse(message));
+        response.html(html);
     }
+
+    //初始化对象
+    editor = ace.edit("code");
+
+    //设置风格和语言（更多风格和语言，请到github上相应目录查看）
+//    theme = "tomorrow"
+    theme = "xcode";
+    language = "mysql";
+    editor.setTheme("ace/theme/" + theme);
+    editor.session.setMode("ace/mode/" + language);
+
+    //字体大小
+    editor.setFontSize(14);
+
+    //设置只读（true时只读，用于展示代码）
+    editor.setReadOnly(false);
+
+    //自动换行,设置为off关闭
+    editor.setOption("wrap", "free")
+
+    //启用提示菜单
+    ace.require("ace/ext/language_tools");
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+    });
 </script>
