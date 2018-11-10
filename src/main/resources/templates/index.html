@@ -9,6 +9,7 @@
     <!-- SockJS的客户端脚本 -->
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js"></script>
+    <script src="/js/websocket.js"></script>
 </head>
 <style>
 </style>
@@ -16,23 +17,20 @@
 <div style="margin:0 auto;width:800px;">
     <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
         <div id="conversationDiv">
-            <pre id="code" class="ace_editor" style="height:300px;margin-top: 100px" placeholder="请输入sql语句"><textarea class="ace_text-input"></textarea></pre>
-            <!--<textarea id="sql" style="width:800px;height:200px;resize: none;" placeholder="请输入sql语句"></textarea>-->
+            <pre id="code" class="ace_editor" style="height:300px;margin-top: 100px" placeholder="请输入sql语句"></pre>
         </div>
         <hr>
-        <button  onclick="sendSql();" class="layui-btn">在线分析</button>
-        <button style="margin-right: 20px" id="sendSql" onclick="sendSql();" class="layui-btn">离线分析
+        <button style="margin-right: 10px" id="sendSql" onclick="sendSql();" class="layui-btn">分析
         </button>
-        <!--<button id="send" data-method="notice" onclick="sendSql();" class="layui-btn">在线分析</button>-->
     </div>
     <div class="layui-tab layui-tab-card"
-         style="background-color: #626564;width: 800px;height: 400px;overflow:scroll;margin-top: 100px">
+         style="background-color: #040404;width: 800px;height: 400px;overflow:scroll;margin-top: 100px">
         <ul class="layui-tab-title">
             <li>分析结果</li>
         </ul>
         <div class="layui-tab-content">
             <div class="layui-tab-item layui-show">
-                <div id="response">
+                <div id="response" style="color: white">
 
                 </div>
             </div>
@@ -80,33 +78,11 @@
         });
 
     });
-
-    var ws = new WebSocket("ws://localhost:8080/myHandler");
-    ws.onmessage = function (message) {
-        console.log(message.data);
-        showResponse(message.data);
-    }
-
-    function sendSql() {
-        var sql = $('#sql').val();
-        ws.send(sql);
-        console.log(ws);
-    }
-
-    function showResponse(message) {
-        var converter = new showdown.Converter();
-        var text = JSON.parse(message).verifyInfo;
-        var html = converter.makeHtml(text);
-        var response = $("#response");
-        console.log(JSON.parse(message));
-        response.html(html);
-    }
-
     //初始化对象
     editor = ace.edit("code");
 
     //设置风格和语言（更多风格和语言，请到github上相应目录查看）
-//    theme = "tomorrow"
+    //    theme = "tomorrow"
     theme = "xcode";
     language = "mysql";
     editor.setTheme("ace/theme/" + theme);
@@ -128,4 +104,12 @@
         enableSnippets: true,
         enableLiveAutocompletion: true
     });
+
+    function sendSql() {
+        var sql = editor.getValue();
+        ws.send(sql);
+        console.log(ws);
+    }
+
+
 </script>

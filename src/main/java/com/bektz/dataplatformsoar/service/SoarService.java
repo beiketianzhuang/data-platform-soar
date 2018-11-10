@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class SoarService {
 
-    private static final String CMD = "%s/soar '-query=%s'";
+    private static final String CMD = "%s/soar '-test-dsn=devopsa:1qaz@WSX@172.21.7.14:3306/devops' '-query=%s' '-report-type=text' '-allow-online-as-test=false' -log-output=/Users/chenlang/work/src/github.com/XiaoMi/";
 
     @Value("${soar-configs.execuable_path}")
     private String soarPath;
