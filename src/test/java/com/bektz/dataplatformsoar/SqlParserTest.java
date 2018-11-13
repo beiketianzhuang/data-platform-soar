@@ -4,12 +4,9 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
-import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
-import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlOutputVisitor;
 import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat;
 import com.alibaba.druid.util.JdbcConstants;
-import com.bektz.dataplatformsoar.sqlparser.ColumnItem;
 import com.bektz.dataplatformsoar.sqlparser.ExportTableAliasVisitor;
 import com.bektz.dataplatformsoar.sqlparser.SqlAnalyzer;
 import com.bektz.dataplatformsoar.sqlparser.TableMetaData;
@@ -26,8 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class SqlParserTest {
@@ -117,7 +114,7 @@ public class SqlParserTest {
 
     @Test
     public void druidTest() {
-         String sql = "select a from laer";
+//        String sql = "select a from laer";
 //        String sql = "select a.name c from (select alert.name from alert inner join user on alert.id = user.id) a";
 //        String sql = "SELECT * FROM MY_TABLE1, MY_TABLE2, (SELECT * FROM MY_TABLE3) LEFT OUTER JOIN MY_TABLE4 " +
 //                " WHERE ID = (SELECT MAX(ID) FROM MY_TABLE5) AND ID2 IN (SELECT * FROM MY_TABLE6)";
@@ -125,7 +122,7 @@ public class SqlParserTest {
 //        String sql = "select a.na a  from (select u.name as na , u.age from user u inner join alert al on alert.id = user.id)  a";
 //        String sql = "select a.m cc , a.nnn from (select c.mobile as m ,c.nnn nnn from card c where c.id = 1) a";
 //        String sql = "select u.name,u.no  from (select u.name name ,c.card_no no from user u inner join card c on u.id = c.id) u";
-//            String sql = "select * from (select a,avg(*) b from alert) c";
+            String sql = "select * from (select a,avg(*) b from alert) c";
 //        String sql = "select a.name c from alert a";
 //        SQLExprParser exprParser = SQLParserUtils.createExprParser(sql, "mysql");
         List<SQLStatement> sqlStatements = SQLUtils.parseStatements(sql, JdbcConstants.MYSQL);
@@ -145,7 +142,7 @@ public class SqlParserTest {
         for (SQLStatement statement : sqlStatements) {
             SQLSelect select = ((SQLSelectStatement) statement).getSelect();
             SQLSelectQueryBlock query = (SQLSelectQueryBlock) select.getQuery();
-            System.out.println("最外层："+query.getSelectList());
+            System.out.println("最外层：" + query.getSelectList());
             if (query.getFrom() instanceof SQLSubqueryTableSource) {
                 SQLSubqueryTableSource ssts = (SQLSubqueryTableSource) query.getFrom();
                 MySqlSelectQueryBlock mssqb = (MySqlSelectQueryBlock) ssts.getSelect().getQuery();
@@ -158,7 +155,9 @@ public class SqlParserTest {
                 System.out.println(mssqb.getSelectList());//这里打印的就是子查询的*
             }
         }
-
+        SqlAnalyzer sqlAnalyzer = new SqlAnalyzer();
+        Set<com.bektz.dataplatformsoar.sqlparser.TableMetaData> tableMetaData = sqlAnalyzer.parserRealMetaData(sql);
+        System.out.println("最终:" + tableMetaData);
 
     }
 
@@ -201,10 +200,10 @@ public class SqlParserTest {
     @Test
     public void execMySqlTest() {
 //        String sql = "select a.m cc from (select c.mobile as m  from card c) a";
-        String sql = "select name n from user";
+        String sql = "select u.name n ,u.age from user u";
         SqlAnalyzer sqlAnalyzer = new SqlAnalyzer();
-        List<com.bektz.dataplatformsoar.sqlparser.TableMetaData> tableMetaData = sqlAnalyzer.queryResult(sql);
-
+        Set<com.bektz.dataplatformsoar.sqlparser.TableMetaData> tableMetaData = sqlAnalyzer.parserRealMetaData(sql);
+        System.out.println(tableMetaData);
     }
 
     @Data

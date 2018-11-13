@@ -1,6 +1,8 @@
 package com.bektz.dataplatformsoar.sqlparser;
 
 import com.alibaba.druid.sql.SQLUtils;
+import com.alibaba.druid.sql.ast.SQLExpr;
+import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
@@ -9,6 +11,7 @@ import com.alibaba.druid.stat.TableStat;
 import com.alibaba.druid.util.JdbcConstants;
 import com.bektz.dataplatformsoar.exception.SqlParserException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -20,7 +23,7 @@ import static com.alibaba.druid.util.JdbcConstants.MYSQL;
 public class SqlAnalyzer {
     private static final int INPUT_SQL_COUNT_MAX = 1;
 
-    public List<TableMetaData> queryResult(String sql) {
+    public Set<TableMetaData> parserRealMetaData(String sql) {
         List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, MYSQL);
         if (stmtList.size() > INPUT_SQL_COUNT_MAX) {
             throw new SqlParserException("不好意思哦！只支持单条sql的查询");
@@ -44,50 +47,94 @@ public class SqlAnalyzer {
      * @param subqueryColumns
      * @return
      */
-    private List<TableMetaData> parserRealOutermostColumns(Map<String, List<String>> allColumns,
-                                                           List<SQLSelectItem> outermostColumns,
-                                                           List<SQLSelectItem> subqueryColumns) {
-        List<TableMetaData> metaDatas = new ArrayList<>(outermostColumns.size());
+    private Set<TableMetaData> parserRealOutermostColumns(Map<String, List<String>> allColumns,
+                                                          List<SQLSelectItem> outermostColumns,
+                                                          List<SQLSelectItem> subqueryColumns) {
+        Set<TableMetaData> metaDatas = new HashSet<>(outermostColumns.size());
+        Set<String> tables = allColumns.keySet();
         if (CollectionUtils.isEmpty(subqueryColumns)) {
-            Set<String> tables = allColumns.keySet();
-            tables.forEach(table -> {
-                TableMetaData tableMetaData = new TableMetaData();
-                List<ColumnMetaData> columnMetaDatas = tableMetaData.getColumnMetaDatas();
-                allColumns.get(table).forEach(column -> outermostColumns.forEach(outer -> {
-                    if (allColumns.get(table).contains(outer.getExpr().toString())) {
-                        columnMetaDatas.add(ColumnMetaData.builder().column(column).columnAlias(outer.getAlias()).build());
-                        tableMetaData.setTable(table);
-                    }
-                }));
-                metaDatas.add(tableMetaData);
-            });
+            buildParserTableMetaData(allColumns, outermostColumns, metaDatas, tables);
         }
 
         if (!CollectionUtils.isEmpty(subqueryColumns)) {
+            buildParserTableMetaData(allColumns, outermostColumns, subqueryColumns, metaDatas, tables);
+        }
+        return metaDatas;
+    }
 
+    private void buildParserTableMetaData(Map<String, List<String>> allColumns,
+                                          List<SQLSelectItem> outermostColumns,
+                                          List<SQLSelectItem> subqueryColumns,
+                                          Set<TableMetaData> metaDatas,
+                                          Set<String> tables) {
+
+        for (SQLSelectItem outermostColumn : outermostColumns) {
+            SQLExpr expr = outermostColumn.getExpr();
+            String outerName = null;
+            if (expr instanceof SQLName) {
+                outerName = ((SQLName) expr).getSimpleName();
+            }
+            a:
+            for (SQLSelectItem subqueryColumn : subqueryColumns) {
+                String subAlias = subqueryColumn.getAlias();
+                if (outerName.equals(subAlias)) {
+                    SQLExpr subExpr = subqueryColumn.getExpr();
+                    String subqueryName = null;
+                    if (expr instanceof SQLName) {
+                        subqueryName = ((SQLName) subExpr).getSimpleName();
+                    }
+                    for (String table : tables) {
+                        TableMetaData tableMetaData = null;
+                        for (TableMetaData metaData : metaDatas) {
+                            if (metaData.getTable().equals(table)) {
+                                tableMetaData = metaData;
+                                break;
+                            }
+                        }
+                        if (tableMetaData == null) tableMetaData = new TableMetaData();
+                        List<ColumnMetaData> columnMetaDatas = tableMetaData.getColumnMetaDatas();
+                        List<String> columns = allColumns.get(table);
+                        if (columns.contains(subqueryName)) {
+                            tableMetaData.setTable(table);
+                            String alias = outermostColumn.getAlias();
+                            if (StringUtils.isBlank(alias)) alias = outermostColumn.toString();
+                            columnMetaDatas.add(ColumnMetaData.builder().column(subqueryName).columnAlias(alias).build());
+                            metaDatas.add(tableMetaData);
+                            continue a;
+                        }
+
+                    }
+                }
+
+            }
         }
-        /**
-         * [user.id, card.id, user.name, card.card_no]
-         [u.name, u.no]
-         [u.name AS name, c.card_no AS no]
-         */
-        if (allColumns.size() == outermostColumns.size()) {
-//            Set<String> tables = allColumns.keySet();
-//            tables.forEach(table -> {
-//
-//
-//
-//
-//
-//                TableMetaData tableMetaData = new TableMetaData();
-//                List<ColumnMetaData> columnMetaDatas = tableMetaData.getColumnMetaDatas();
-//                allColumns.get(table).forEach(column -> {
-//                    columnMetaDatas.add(ColumnMetaData.builder().column(column.getName()).columnAlias("").build());
-//                });
-//
-//            });
+    }
+
+    private void buildParserTableMetaData(Map<String, List<String>> allColumns,
+                                          List<SQLSelectItem> outermostColumns,
+                                          Set<TableMetaData> metaDatas,
+                                          Set<String> tables) {
+
+        for (String table : tables) {
+            TableMetaData tableMetaData = new TableMetaData();
+            List<ColumnMetaData> columnMetaDatas = tableMetaData.getColumnMetaDatas();
+            for (SQLSelectItem outermostColumn : outermostColumns) {
+                SQLExpr expr = outermostColumn.getExpr();
+                String name = null;
+                if (expr instanceof SQLName) {
+                    name = ((SQLName) expr).getSimpleName();
+                }
+                if (allColumns.get(table).contains(name)) {
+                    String alias = outermostColumn.getAlias();
+                    if (StringUtils.isBlank(alias)) alias = outermostColumn.toString();
+                    columnMetaDatas.add(ColumnMetaData.builder().column(name).columnAlias(alias).build());
+                    tableMetaData.setTable(table);
+                }
+            }
+            if (!CollectionUtils.isEmpty(tableMetaData.getColumnMetaDatas())) {
+                metaDatas.add(tableMetaData);
+            }
         }
-        return null;
     }
 
 
