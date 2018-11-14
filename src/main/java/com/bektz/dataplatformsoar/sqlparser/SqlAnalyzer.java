@@ -4,6 +4,7 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.expr.SQLAllColumnExpr;
 import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
 import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
@@ -74,6 +75,10 @@ public class SqlAnalyzer {
             if (expr instanceof SQLName) {
                 outerName = ((SQLName) expr).getSimpleName();
             }
+            if (expr instanceof SQLAllColumnExpr) {
+                metaDatas.add(TableMetaData.builder().table("*").build());
+                continue;
+            }
             a:
             for (SQLSelectItem subqueryColumn : subqueryColumns) {
                 String subAlias = subqueryColumn.getAlias();
@@ -118,11 +123,16 @@ public class SqlAnalyzer {
         for (String table : tables) {
             TableMetaData tableMetaData = new TableMetaData();
             List<ColumnMetaData> columnMetaDatas = tableMetaData.getColumnMetaDatas();
+            a:
             for (SQLSelectItem outermostColumn : outermostColumns) {
                 SQLExpr expr = outermostColumn.getExpr();
                 String name = null;
                 if (expr instanceof SQLName) {
                     name = ((SQLName) expr).getSimpleName();
+                }
+                if (expr instanceof SQLAllColumnExpr) {
+                    metaDatas.add(TableMetaData.builder().table("*").build());
+                    continue a;
                 }
                 if (allColumns.get(table).contains(name)) {
                     String alias = outermostColumn.getAlias();

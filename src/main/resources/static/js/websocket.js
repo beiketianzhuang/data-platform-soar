@@ -16,7 +16,7 @@ ws.onopen = function (evnt) {
 
 //发送心跳数据
 var heartCheck = {
-    timeout: 10000,//10s
+    timeout: 20000,//10s
     timeoutObj: null,
     reset: function () {
         clearInterval(this.timeoutObj);

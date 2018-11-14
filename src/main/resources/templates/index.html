@@ -14,8 +14,11 @@
 <style>
 </style>
 <body>
+<div >
+</div>
 <div style="margin:0 auto;width:800px;">
     <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
+        <button data-method="notice" class="layui-btn">添加数据库</button>
         <div id="conversationDiv">
             <pre id="code" class="ace_editor" style="height:300px;margin-top: 100px" placeholder="请输入sql语句"></pre>
         </div>
@@ -38,34 +41,68 @@
     </div>
 
 </div>
-
+<div id="form" style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 400;" hidden >
+    <form  id="sub" class="layui-form" action="/schema/add" lay-filter="example" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址：</label>
+            <div class="layui-input-block">
+                <input type="text" name="address" lay-verify="title" autocomplete="off" placeholder="请输入地址" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名：</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" lay-verify="title" autocomplete="off" placeholder="请输入用户名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码：</label>
+            <div class="layui-input-block">
+                <input type="password" name="password" placeholder="请输入密码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">端口：</label>
+            <div class="layui-input-inline">
+                <input name="port" required lay-verify="required" placeholder="3306" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <!--<div class="layui-form-item">-->
+        <!--<div class="layui-input-block">-->
+        <!--<button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>-->
+        <!--</div>-->
+        <!--</div>-->
+    </form>
+</div>
 </body>
 </html>
 <script>
-    layui.use('layer', function () { //独立版的layer无需执行这一句
+    layui.use(['form','layer'], function () { //独立版的layer无需执行这一句
         var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
-
+        var form = layui.form
         //触发事件
         var active = {
-            notice: function () {
+            notice: function(){
                 //示范一个公告层
                 layer.open({
                     type: 1
-                    , title: false //不显示标题栏
-                    , closeBtn: false
-                    , area: ['500px', '600px']
-                    , shade: 0.8
-                    , id: 'LAY_layuipro' //设定一个id，防止重复弹出
-                    , btn: ['确认', '去优化']
-                    , btnAlign: 'c'
-                    , fixed: true
-                    , moveType: 1 //拖拽模式，0或者1
-                    , content: '<div id="response" style="background-color: #7c8190;"></div>'
-                    , success: function (layero) {
-                        var btn = layero.find('.layui-layer-btn');
-                        btn.find('.layui-layer-btn0').attr({
-                            href: '#'
-                        });
+                    ,title: false //不显示标题栏
+                    ,closeBtn: false
+                    ,area: '600px;'
+                    ,shade: 0.8
+                    ,id: 'LAY_layuipro' //设定一个id，防止重复弹出
+                    ,btn: ['取消', '添加']
+                    ,btnAlign: 'c'
+                    ,moveType: 1 //拖拽模式，0或者1
+                    ,content: $("#form")
+                    ,success: function(layero){
+//                        var btn = layero.find('.layui-layer-btn');
+                        layero.find('#sub').submit();
+//                        btn.find('.layui-layer-btn1').attr($("#sub").submit)
+//                        btn.find('.layui-layer-btn1').attr({
+//                            href: 'http://www.layui.com/'
+//                            ,target: '_blank'
+//                        });
                     }
                 });
             }
@@ -77,7 +114,26 @@
             active[method] ? active[method].call(this, othis) : '';
         });
 
+        //定义form表单规则
+        form.verify({
+            title: function(value){
+                if(value.length < 5){
+                    return '标题至少得5个字符啊';
+                }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,content: function(value){
+                layedit.sync(editIndex);
+            }
+        });
+
     });
+
+
+
+
+
+
     //初始化对象
     editor = ace.edit("code");
 
