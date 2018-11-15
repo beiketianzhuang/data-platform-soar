@@ -2,10 +2,12 @@ package com.bektz.dataplatformsoar.service.jdbc;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.bektz.dataplatformsoar.req.SchemaReq;
+import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Service
 public class DataSourceManager {
 
     private static final String MYSQL_CONNECTION_URL_TEMPLATE = "jdbc:mysql://%s:%s/information_schema?useUnicode=true&amp;characterEncoding=utf8";
@@ -14,7 +16,7 @@ public class DataSourceManager {
     public void initDataSource(SchemaReq schemaReq) {
         DruidDataSource dataSource = new DruidDataSource();
         dataSource.setUsername(schemaReq.getUserName());
-        dataSource.setUrl(String.format(MYSQL_CONNECTION_URL_TEMPLATE, schemaReq.getUrl(), schemaReq.getPort()));
+        dataSource.setUrl(String.format(MYSQL_CONNECTION_URL_TEMPLATE, schemaReq.getAddress(), schemaReq.getPort()));
         dataSource.setPassword(schemaReq.getPassword());
         dataSource.setMaxActive(2);
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
