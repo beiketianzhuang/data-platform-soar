@@ -1,5 +1,6 @@
 package com.bektz.dataplatformsoar.sqlparser;
 
+import com.bektz.dataplatformsoar.constants.QueryType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class TableMetaData {
     private String table;
     private String tableAlias;
     private List<ColumnMetaData> columnMetaDatas = new ArrayList<>();
+    private QueryType type;
 
     @Override
     public boolean equals(Object o) {

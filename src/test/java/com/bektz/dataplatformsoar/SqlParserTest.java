@@ -113,14 +113,15 @@ public class SqlParserTest {
 
     @Test
     public void druidTest() {
-//        String sql = "select a from laer";
+
+//        String sql = "select * from laer";
 //        String sql = "select a.name c from (select alert.name from alert inner join user on alert.id = user.id) a";
-//        String sql = "SELECT * FROM MY_TABLE1, MY_TABLE2, (SELECT * FROM MY_TABLE3) LEFT OUTER JOIN MY_TABLE4 " +
-//                " WHERE ID = (SELECT MAX(ID) FROM MY_TABLE5) AND ID2 IN (SELECT * FROM MY_TABLE6)";
+        String sql = "SELECT * ,username FROM MY_TABLE1, MY_TABLE2, (SELECT username FROM MY_TABLE3) LEFT OUTER JOIN MY_TABLE4 " +
+                " WHERE ID = (SELECT MAX(ID) FROM MY_TABLE5) AND ID2 IN (SELECT * FROM MY_TABLE6)";
 //            String sql = "select sname,st.sno,scn.cn from student st join (select distinct sno,count(*)cn from sc group by sc.sno)scn on(st.sno=scn.sno) where scn.cn=(select distinct count(cno) from course);\n";
 //        String sql = "select a.na a  from (select u.name as na , u.age from user u inner join alert al on alert.id = user.id)  a";
 //        String sql = "select a.m cc , a.nnn from (select c.mobile as m ,c.nnn nnn from card c where c.id = 1) a";
-        String sql = "select u.name,u.no  from (select u.name name ,c.card_no no from user u inner join card c on u.id = c.id) u";
+//        String sql = "select u.name,u.no  from (select u.name name ,c.card_no no from user u inner join card c on u.id = c.id) u";
 //            String sql = "select * from (select a,avg(*) b from alert) c";
 //            String sql = "select mobile,avg(mobile)  from card";
 //        String sql = "select a.name c from alert a";

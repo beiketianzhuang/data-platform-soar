@@ -18,3 +18,7 @@ soar-configs:
       -verbose:
         type : 1
         default: true
+spring:
+    aop:
+      proxy-target-class: true
+      auto: true
