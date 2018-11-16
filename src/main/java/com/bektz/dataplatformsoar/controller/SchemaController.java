@@ -21,11 +21,7 @@ public class SchemaController {
 
     @PostMapping(value = "/schema")
     public ResponseEntity<GenericResponse> addSchema(@RequestBody @Valid SchemaReq schemaReq, BindingResult result) {
-        try {
-            schemaService.addSchema(schemaReq);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(GenericResponse.CLIENT_ERROR);
-        }
+        schemaService.addSchema(schemaReq);
         return ResponseEntity.ok(GenericResponse.SUCCESS);
     }
 }
