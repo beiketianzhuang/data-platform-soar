@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -17,6 +17,18 @@
 <body>
 <div>
 </div>
+<div style="float: left">
+    <div>
+        <li th:each="schemeResp:${schemeResps}">
+            <p2><span th:text="${schemeResp.schema}">数据库</span></p2>
+            <div th:each="table:${schemeResp.tables}">
+                <p><span th:text="${table.name}"></span></p>
+            </div>
+        </li>
+        <!--<p><strong>Age:</strong><span id="age" th:text=""></span></p>-->
+        <!--<p><strong>Name:</strong><span id="name" th:text=""></span></p>-->
+    </div>
+</div>
 <div style="margin:0 auto;width:800px;">
     <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
         <button data-method="notice" class="layui-btn">添加数据库</button>
@@ -25,6 +37,8 @@
         </div>
         <hr>
         <button style="margin-right: 10px" id="sendSql" onclick="sendSql();" class="layui-btn">分析
+        </button>
+        <button style="margin-right: 10px" id="send" onclick="" class="layui-btn">查询
         </button>
     </div>
     <div class="layui-tab layui-tab-card"
@@ -81,11 +95,6 @@
                        class="layui-input">
             </div>
         </div>
-        <!--<div class="layui-form-item">-->
-        <!--<div class="layui-input-block">-->
-        <!--<button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>-->
-        <!--</div>-->
-        <!--</div>-->
     </form>
 </div>
 </body>
@@ -105,7 +114,7 @@
                     , area: '600px;'
                     , shade: 0.8
                     , id: 'LAY_layuipro' //设定一个id，防止重复弹出
-                    , btn: ['取消', '添加']
+                    , btn: ['添加', '取消']
                     , btnAlign: 'c'
                     , moveType: 1 //拖拽模式，0或者1
                     , content: $("#form")
@@ -122,10 +131,10 @@
                                 });
                                 layer.close(index)
                             },
-                            error: function (e,data) {
+                            error: function (e, data) {
                                 console.log(e.responseJSON.message)
                                 console.log(data)
-                                layer.msg(e.responseJSON.message,{
+                                layer.msg(e.responseJSON.message, {
                                     time: 3000,
                                 })
                             }
