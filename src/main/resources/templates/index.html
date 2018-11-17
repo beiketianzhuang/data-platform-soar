@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -19,15 +19,20 @@
 </div>
 <div style="float: left">
     <div>
-        <li th:each="schemeResp:${schemeResps}">
-            <p2><span th:text="${schemeResp.schema}">数据库</span></p2>
-            <div th:each="table:${schemeResp.tables}">
-                <p><span th:text="${table.name}"></span></p>
+        <li th:each="schemaResp:${schemaResps}">
+            <p2><span th:text="${schemaResp.schema}">数据库</span></p2>
+            <div th:each="table:${schemaResp.tables}">
+                <p><span th:text="${table.key}"></span></p>
+                <div th:each="column:${table.value}">
+                                <span th:text="${column}"></span>
+                </div>
             </div>
-        </li>
-        <!--<p><strong>Age:</strong><span id="age" th:text=""></span></p>-->
-        <!--<p><strong>Name:</strong><span id="name" th:text=""></span></p>-->
     </div>
+</div>
+</li>
+<!--<p><strong>Age:</strong><span id="age" th:text=""></span></p>-->
+<!--<p><strong>Name:</strong><span id="name" th:text=""></span></p>-->
+</div>
 </div>
 <div style="margin:0 auto;width:800px;">
     <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
