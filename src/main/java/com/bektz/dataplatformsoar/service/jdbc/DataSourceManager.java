@@ -28,7 +28,7 @@ public class DataSourceManager {
             dataSourceMap.put(schemaReq.getSchema(), dataSource);
         } else {
             log.warn("初始化数据库数据源失败 参数{} ", schemaReq);
-            throw new BektzClientException(1001, "添加数据库失败，请先确认");
+            throw new BektzClientException(1001, "添加数据库失败");
         }
     }
 

@@ -16,7 +16,8 @@ public class GenericResponse {
 
     private String message = EMPTY;
 
-    private Boolean succeed = true;
+    @Builder.Default
+    private Boolean succeed = false;
 
     private int status = 200;
 
