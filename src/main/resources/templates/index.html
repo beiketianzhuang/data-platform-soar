@@ -11,55 +11,86 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js"></script>
     <script src="/js/websocket.js"></script>
     <script src="/js/form.js"></script>
+    <script src="/js/lay.js"></script>
 </head>
 <style>
 </style>
 <body>
-<div>
-</div>
-<div style="float: left">
-    <div>
-        <li th:each="schemaResp:${schemaResps}">
-            <p2><span th:text="${schemaResp.schema}">数据库</span></p2>
-            <div th:each="table:${schemaResp.tables}">
-                <p><span th:text="${table.key}"></span></p>
-                <div th:each="column:${table.value}">
-                                <span th:text="${column}"></span>
+
+<div style="height: 1000px">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>数据查询平台</legend>
+    </fieldset>
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md3">
+                <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
+                    <div class="layui-card">
+                        <div class="layui-card-header">数据库
+                            <button data-method="notice" class="layui-btn layui-btn-sm"
+                                    style="float: right;margin-top: 8px">
+                                添加数据库
+                            </button>
+                        </div>
+                        <!--数据库-->
+                        <div class="layui-card-body">
+                            <div class="layui-input-inline layui-form">
+                                <select id="query_userStatus" lay-search>
+                                    <option value="">请选择数据库</option>
+                                    <div th:each="schemaResp:${schemaResps}">
+                                        <option value="S00202"><span th:text="${schemaResp.schema}">数据库</span></option>
+
+                                    </div>
+                                </select>
+                            </div>
+                        </div>
+                        <!--表-->
+                        <div style="margin-left: 15px;max-width: 100px" th:each="table:${schemaResps[0].tables}">
+                            <i class="layui-icon layui-icon-table" style="font-size: 20px; color: #009688;"><span
+                                    th:text="${table.key}"></span></i>
+                        </div>
+                        <hr>
+                    </div>
                 </div>
             </div>
-    </div>
-</div>
-</li>
-<!--<p><strong>Age:</strong><span id="age" th:text=""></span></p>-->
-<!--<p><strong>Name:</strong><span id="name" th:text=""></span></p>-->
-</div>
-</div>
-<div style="margin:0 auto;width:800px;">
-    <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
-        <button data-method="notice" class="layui-btn">添加数据库</button>
-        <div id="conversationDiv">
-            <pre id="code" class="ace_editor" style="height:300px;margin-top: 100px" placeholder="请输入sql语句"></pre>
-        </div>
-        <hr>
-        <button style="margin-right: 10px" id="sendSql" onclick="sendSql();" class="layui-btn">分析
-        </button>
-        <button style="margin-right: 10px" id="send" onclick="" class="layui-btn">查询
-        </button>
-    </div>
-    <div class="layui-tab layui-tab-card"
-         style="background-color: #040404;width: 800px;height: 400px;overflow:scroll;margin-top: 100px">
-        <ul class="layui-tab-title">
-            <li>分析结果</li>
-        </ul>
-        <div class="layui-tab-content">
-            <div class="layui-tab-item layui-show">
-                <div id="response" style="color: white">
+            <div class="layui-col-md9">
+                <div class="layui-card">
+                    <div class="layui-card-header">查询</div>
+                    <div class="layui-card-body">
+                        <div id="conversationDiv">
+                            <pre id="code" class="ace_editor" style="height:300px;margin-top: 10px"
+                                 placeholder="请输入sql语句"></pre>
+                        </div>
+                        <hr>
+                        <button style="margin-right: 10px" id="sendSql" onclick="sendSql();" class="layui-btn">分析
+                        </button>
+                        <button style="margin-right: 10px" id="send" onclick="" class="layui-btn">查询
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md9" style="float: right">
+                <div class="layui-card">
+                    <!--<div class="layui-card-header"></div>-->
+                    <div class="layui-card-body">
+                        <div class="layui-tab layui-tab-card"
+                             style="background-color: #040404;width: 100%;height: 400px;overflow:scroll;">
+                            <ul class="layui-tab-title">
+                                <li>分析结果</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                <div class="layui-tab-item layui-show">
+                                    <div id="response" style="color: white">
 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 <div id="form"
      style="padding: 50px; height: 300px;width: 100%; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 400;"
@@ -105,71 +136,6 @@
 </body>
 </html>
 <script>
-    layui.use(['form', 'layer'], function () { //独立版的layer无需执行这一句
-        var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
-        var form = layui.form
-        //触发事件
-        var active = {
-            notice: function () {
-                //示范一个公告层
-                layer.open({
-                    type: 1
-                    , title: false //不显示标题栏
-                    , closeBtn: false
-                    , area: '600px;'
-                    , shade: 0.8
-                    , id: 'LAY_layuipro' //设定一个id，防止重复弹出
-                    , btn: ['添加', '取消']
-                    , btnAlign: 'c'
-                    , moveType: 1 //拖拽模式，0或者1
-                    , content: $("#form")
-                    , yes: function (index, layero) {
-                        $.ajax({
-                            url: "/schema",
-                            type: "post",
-                            data: JSON.stringify($('#sub').serializeObject()),
-                            contentType: "application/json",
-                            dataType: "JSON",
-                            success: function (data) {
-                                layer.msg(data.message, {
-                                    time: 2000,
-                                });
-                                layer.close(index)
-                            },
-                            error: function (e, data) {
-                                console.log(e.responseJSON.message)
-                                console.log(data)
-                                layer.msg(e.responseJSON.message, {
-                                    time: 3000,
-                                })
-                            }
-                        });
-                    }
-                });
-            }
-
-        };
-
-        $('#layerDemo .layui-btn').on('click', function () {
-            var othis = $(this), method = othis.data('method');
-            active[method] ? active[method].call(this, othis) : '';
-        });
-
-        //定义form表单规则
-        form.verify({
-            title: function (value) {
-                if (value.length < 5) {
-                    return '标题至少得5个字符啊';
-                }
-            }
-            , pass: [/(.+){6,12}$/, '密码必须6到12位']
-            , content: function (value) {
-                layedit.sync(editIndex);
-            }
-        });
-
-    });
-
 
     //初始化对象
     editor = ace.edit("code");

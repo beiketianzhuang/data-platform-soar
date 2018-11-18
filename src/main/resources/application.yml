@@ -26,3 +26,4 @@ spring:
       prefix: classpath:/templates/
       check-template: true
       mode: HTML5
+      cache: false
