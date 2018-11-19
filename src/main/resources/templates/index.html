@@ -23,7 +23,7 @@
     </fieldset>
     <div style="padding: 20px; background-color: #F2F2F2;">
         <div class="layui-row layui-col-space15">
-            <div class="layui-col-md3">
+            <div class="layui-col-md3" >
                 <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
                     <div class="layui-card">
                         <div class="layui-card-header">数据库
@@ -35,20 +35,27 @@
                         <!--数据库-->
                         <div class="layui-card-body">
                             <div class="layui-input-inline layui-form">
-                                <select id="query_userStatus" lay-search>
-                                    <option value="">请选择数据库</option>
+                                <select lay-search lay-filter="get_tables">
+                                    <!--<option value="" >请选择数据库</option>-->
                                     <div th:each="schemaResp:${schemaResps}">
-                                        <option value="S00202"><span th:text="${schemaResp.schema}">数据库</span></option>
+                                        <option th:value="${schemaResp.schema}" value="S00202"><span th:text="${schemaResp.schema}">数据库</span></option>
 
                                     </div>
                                 </select>
                             </div>
                         </div>
                         <!--表-->
-                        <div style="margin-left: 15px;max-width: 100px" th:each="table:${schemaResps[0].tables}">
-                            <i class="layui-icon layui-icon-table" style="font-size: 20px; color: #009688;"><span
-                                    th:text="${table.key}"></span></i>
+                        <div id="table_refresh" style="margin-left:15px;overflow:scroll;" th:fragment="table_refresh">
+                            <div th:each="table:${#lists.size(schemaResps) == 0} ? ${schemaResps} : ${schemaResps[0].tables}" >
+                                <i class="layui-icon layui-icon-table" style="font-size: 20px; color: #009688;"><span th:text="${table.key}"></span></i>
+                            </div>
                         </div>
+
+                        <!--<div id="table_refresh" style="margin-left: 15px;overflow:scroll;"-->
+                             <!--th:each="table:${schemaResp?.tables}" th:fragment="table_refresh">-->
+                            <!--<i class="layui-icon layui-icon-table" style="font-size: 20px; color: #009688;"><span-->
+                                    <!--th:text="${table.key}"></span></i>-->
+                        <!--</div>-->
                         <hr>
                     </div>
                 </div>
@@ -169,6 +176,5 @@
         ws.send(sql);
         console.log(ws);
     }
-
 
 </script>

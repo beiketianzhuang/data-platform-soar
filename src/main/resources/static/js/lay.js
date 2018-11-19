@@ -18,7 +18,7 @@ layui.use(['form', 'layer'], function () { //独立版的layer无需执行这一
                 , content: $("#form")
                 , yes: function (index, layero) {
                     $.ajax({
-                        url: "/schema",
+                        url: "/schemas",
                         type: "post",
                         data: JSON.stringify($('#sub').serializeObject()),
                         contentType: "application/json",
@@ -28,6 +28,7 @@ layui.use(['form', 'layer'], function () { //独立版的layer无需执行这一
                                 time: 2000,
                             });
                             layer.close(index)
+                            $('#schema_refresh').load("/schemas/all");
                         },
                         error: function (e, data) {
                             console.log(e.responseJSON.message)
@@ -59,6 +60,14 @@ layui.use(['form', 'layer'], function () { //独立版的layer无需执行这一
         , content: function (value) {
             layedit.sync(editIndex);
         }
+    });
+
+    form.on('select(get_tables)', function (data) {
+        if (data.value == '') {
+            return;
+        }
+        console.log(data.value);
+        $('#table_refresh').load("/schemas/" + data.value);
     });
 
 });

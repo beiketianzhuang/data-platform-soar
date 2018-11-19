@@ -35,4 +35,4 @@
 通过 http://localhost:8080 访问
 ```
 ### DEMO
-![Aaron Swartz](https://github.com/beiketianzhuang/data-platform-verfiy/blob/master/demo.jpg)
+![Aaron Swartz](https://github.com/beiketianzhuang/data-platform-verfiy/blob/master/demo.png)

@@ -42,5 +42,14 @@ public class SchemaService {
         return schemaResps;
     }
 
+    public SchemaResp getSchemaResp(String schema) {
+        List<String> tables = jdbcTemplate.allTablesInSchema(schema);
+        Map<String, List<String>> tableMaps = new HashMap<>();
+        for (String table : tables) {
+            List<String> columns = jdbcTemplate.allColumnInTable(schema, table);
+            tableMaps.put(table, columns);
+        }
+        return SchemaResp.builder().schema(schema).tables(tableMaps).build();
+    }
 
 }
