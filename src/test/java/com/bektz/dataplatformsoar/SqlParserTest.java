@@ -1,14 +1,18 @@
 package com.bektz.dataplatformsoar;
 
 import com.alibaba.druid.sql.SQLUtils;
+import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlSelectQueryBlock;
+import com.alibaba.druid.sql.dialect.mysql.parser.MySqlStatementParser;
+import com.alibaba.druid.sql.parser.SQLDDLParser;
 import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat;
 import com.alibaba.druid.util.JdbcConstants;
+import com.bektz.dataplatformsoar.sqlparser.ColumnItem;
+import com.bektz.dataplatformsoar.sqlparser.DruidSqlParser;
 import com.bektz.dataplatformsoar.sqlparser.ExportTableAliasVisitor;
-import com.bektz.dataplatformsoar.sqlparser.SqlAnalyzer;
 import lombok.Builder;
 import lombok.Data;
 import net.sf.jsqlparser.JSQLParserException;
@@ -126,12 +130,17 @@ public class SqlParserTest {
 //            String sql = "select mobile,avg(mobile)  from card";
 //        String sql = "select a.name c from alert a";
 //        SQLExprParser exprParser = SQLParserUtils.createExprParser(sql, "mysql");
+//        String sql = "select * from firekylin.card";
         List<SQLStatement> sqlStatements = SQLUtils.parseStatements(sql, JdbcConstants.MYSQL);
+        SQLExpr sqlExpr = SQLUtils.toSQLExpr(sql, JdbcConstants.MYSQL);
         SchemaStatVisitor statVisitor = SQLUtils.createSchemaStatVisitor(JdbcConstants.MYSQL);
         SQLStatement sqlStatement = sqlStatements.get(0);
         sqlStatement.accept(statVisitor);
         System.out.println(statVisitor.getColumns());
         Collection<TableStat.Column> columns = statVisitor.getColumns();
+        MySqlStatementParser sqlStatementParser = new MySqlStatementParser(sql);
+        MySqlSelectQueryBlock block = new MySqlSelectQueryBlock();
+        SQLDDLParser sqlddlParser = new SQLDDLParser(sql);
 //        for (TableStat.Column column : columns) {
 //            if (column.isSelect()) {
 //                System.out.println(column.toString());
@@ -156,9 +165,9 @@ public class SqlParserTest {
                 System.out.println(mssqb.getSelectList());//这里打印的就是子查询的*
             }
         }
-        SqlAnalyzer sqlAnalyzer = new SqlAnalyzer();
-        Set<com.bektz.dataplatformsoar.sqlparser.TableMetaData> tableMetaData = sqlAnalyzer.parserRealMetaData(sql);
-        System.out.println("最终:" + tableMetaData);
+        DruidSqlParser druidSqlParser = new DruidSqlParser();
+//        Set<com.bektz.dataplatformsoar.sqlparser.TableMetaData> tableMetaData = druidSqlParser.parserRealMetaData(sql);
+//        System.out.println("最终:" + tableMetaData);
 
     }
 
@@ -193,18 +202,35 @@ public class SqlParserTest {
         String sql = "select a.m cc from (select c.mobile as m  from card c) a";
 //        String sql = "SELECT * FROM MY_TABLE1, MY_TABLE2, (SELECT * FROM MY_TABLE3) LEFT OUTER JOIN MY_TABLE4 " +
 //                " WHERE ID = (SELECT MAX(ID) FROM MY_TABLE5) AND ID2 IN (SELECT * FROM MY_TABLE6)";
-        SqlAnalyzer sqlAnalyzer = new SqlAnalyzer();
-//        Map<String, ColumnItem> stringColumnItemMap = sqlAnalyzer.parseSqlColumn(sql);
+        DruidSqlParser druidSqlParser = new DruidSqlParser();
+//        Map<String, ColumnItem> stringColumnItemMap = druidSqlParser.parseSqlColumn(sql);
 //        System.out.println(stringColumnItemMap);
     }
 
     @Test
     public void execMySqlTest() {
 //        String sql = "select a.m cc from (select c.mobile as m  from card c) a";
-        String sql = "select u.name n ,u.age from user u";
-        SqlAnalyzer sqlAnalyzer = new SqlAnalyzer();
-        Set<com.bektz.dataplatformsoar.sqlparser.TableMetaData> tableMetaData = sqlAnalyzer.parserRealMetaData(sql);
-        System.out.println(tableMetaData);
+//        String sql = "select u.name n ,u.age from user u";
+        String sql = "select a.m as cc from (select c.mobile as m from (select mobile from card) c) a";
+        DruidSqlParser druidSqlParser = new DruidSqlParser();
+        Set<ColumnItem> columnItems = druidSqlParser.parserRealMetaData(sql);
+        System.out.println(columnItems);
+    }
+
+
+    @Test
+    public void ddlTest() {
+        String sql = "create table t_org (fid int, name varchar(256))";
+
+        String dbType = JdbcConstants.MYSQL;
+        List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, dbType);
+        SQLStatement stmt = stmtList.get(0);
+
+        SchemaStatVisitor statVisitor = SQLUtils.createSchemaStatVisitor(dbType);
+        stmt.accept(statVisitor);
+
+        System.out.println(statVisitor.getTables()); //{t_org=Create}
+        System.out.println(statVisitor.getColumns()); // [t_org.fid, t_org.name]
     }
 
     @Data
@@ -221,6 +247,7 @@ public class SqlParserTest {
         private String column;
         private String columnAlias;
     }
+
 
 
 }
