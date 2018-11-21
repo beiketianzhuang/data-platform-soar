@@ -1,0 +1,19 @@
+version: '2'
+services:
+  mysql:
+    image: mariadb:latest
+    container_name: mysql_service
+    volumes:
+      - ./data/mysql/data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+  data-platform-soar:
+    build: .
+    ports:
+      - "8080:8080"
+    networks:
+      - local
+    links:
+      - "mysql"
