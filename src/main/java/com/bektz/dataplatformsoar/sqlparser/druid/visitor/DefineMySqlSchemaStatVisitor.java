@@ -1,4 +1,4 @@
-package com.bektz.dataplatformsoar.sqlparser.visitor;
+package com.bektz.dataplatformsoar.sqlparser.druid.visitor;
 
 import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;

@@ -11,8 +11,7 @@ import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat;
 import com.alibaba.druid.util.JdbcConstants;
 import com.bektz.dataplatformsoar.sqlparser.ColumnItem;
-import com.bektz.dataplatformsoar.sqlparser.DruidSqlParser;
-import com.bektz.dataplatformsoar.sqlparser.ExportTableAliasVisitor;
+import com.bektz.dataplatformsoar.sqlparser.druid.DruidSqlParser;
 import lombok.Builder;
 import lombok.Data;
 import net.sf.jsqlparser.JSQLParserException;
@@ -24,10 +23,7 @@ import net.sf.jsqlparser.statement.select.*;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class SqlParserTest {
@@ -176,13 +172,13 @@ public class SqlParserTest {
         final String dbType = JdbcConstants.MYSQL; // JdbcConstants.MYSQL或者JdbcConstants.POSTGRESQL
         String sql = "select a.name c from (select c.name from alert c inner join user u on c.id = u.id) a";
         List<SQLStatement> stmtList = SQLUtils.parseStatements(sql, dbType);
-
-        ExportTableAliasVisitor visitor = new ExportTableAliasVisitor();
-        for (SQLStatement stmt : stmtList) {
-            stmt.accept(visitor);
-        }
-
-        SQLTableSource tableSource = visitor.getAliasMap().get("a");
+//
+//        ExportTableAliasVisitor visitor = new ExportTableAliasVisitor();
+//        for (SQLStatement stmt : stmtList) {
+//            stmt.accept(visitor);
+//        }
+//
+//        SQLTableSource tableSource = visitor.getAliasMap().get("a");
 //        System.out.println(tableSource);
 //        DruidDataSourceFactory factory = new DruidDataSourceFactory();
 //        DataSource dataSource = factory.createDataSource(new Properties());
@@ -213,7 +209,7 @@ public class SqlParserTest {
 //        String sql = "select u.name n ,u.age from user u";
         String sql = "select a.m as cc from (select c.mobile as m from (select mobile from card) c) a";
         DruidSqlParser druidSqlParser = new DruidSqlParser();
-        Set<ColumnItem> columnItems = druidSqlParser.parserRealMetaData(sql);
+        Map<String, ColumnItem> columnItems = druidSqlParser.parserSql(sql);
         System.out.println(columnItems);
     }
 

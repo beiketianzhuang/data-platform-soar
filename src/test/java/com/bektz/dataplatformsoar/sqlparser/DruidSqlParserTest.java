@@ -1,8 +1,9 @@
 package com.bektz.dataplatformsoar.sqlparser;
 
+import com.bektz.dataplatformsoar.sqlparser.druid.DruidSqlParser;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
+import java.util.Map;
 
 class DruidSqlParserTest {
 
@@ -28,7 +29,7 @@ class DruidSqlParserTest {
     void parserRealMetaData() {
         DruidSqlParser druidSqlParser = new DruidSqlParser();
         for (String sql : sqls) {
-            Set<ColumnItem> columnItems = druidSqlParser.parserRealMetaData(sql);
+            Map<String, ColumnItem> columnItems = druidSqlParser.parserSql(sql);
             System.out.println(columnItems);
         }
     }
@@ -41,7 +42,7 @@ class DruidSqlParserTest {
                 "  join sc sc on (st.sno = sc.sno)\n" +
                 " where sc.cno in (select cno from sc where sno = 's001') and sc.sno<>'s001';";
         DruidSqlParser druidSqlParser = new DruidSqlParser();
-        Set<ColumnItem> columnItems = druidSqlParser.parserRealMetaData(sql);
+        Map<String, ColumnItem> columnItems = druidSqlParser.parserSql(sql);
         System.out.println(columnItems);
 
     }

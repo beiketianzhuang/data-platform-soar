@@ -1,7 +1,9 @@
 package com.bektz.dataplatformsoar.controller;
 
 import com.bektz.dataplatformsoar.req.SchemaReq;
+import com.bektz.dataplatformsoar.req.SqlVerifyReq;
 import com.bektz.dataplatformsoar.resp.GenericResponse;
+import com.bektz.dataplatformsoar.resp.JdbcResultResp;
 import com.bektz.dataplatformsoar.resp.SchemaResp;
 import com.bektz.dataplatformsoar.service.SchemaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -43,5 +46,10 @@ public class SchemaController {
         List<SchemaResp> schemaResps = schemaService.getSchemaResps();
         model.addAttribute("schemaResps", schemaResps);
         return "index::schema_refresh";
+    }
+
+    @PostMapping(value = "/schemas/tables/sql::execute")
+    public JdbcResultResp executeSql(@RequestBody @Valid SqlVerifyReq sqlVerifyReq, BindingResult result) {
+        return schemaService.executeSql(sqlVerifyReq);
     }
 }
