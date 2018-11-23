@@ -1,6 +1,8 @@
-layui.use(['form', 'layer'], function () { //独立版的layer无需执行这一句
+layui.use(['form', 'layer','element','table'], function () { //独立版的layer无需执行这一句
     var $ = layui.jquery, layer = layui.layer; //独立版的layer无需执行这一句
-    var form = layui.form
+    var form = layui.form;
+    var element = layui.element;
+    var table = layui.table;
     //触发事件
     var active = {
         notice: function () {
@@ -66,8 +68,23 @@ layui.use(['form', 'layer'], function () { //独立版的layer无需执行这一
         if (data.value == '') {
             return;
         }
-        console.log(data.value);
+        localStorage.setItem("schema",data.value);
         $('#table_refresh').load("/schemas/" + data.value);
     });
 
+    //获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
+    var layid = location.hash.replace(/^#test1=/, '');
+    element.tabChange('test1', layid); //假设当前地址为：http://a.com#test1=222，那么选项卡会自动切换到“发送消息”这一项
+
+    //监听Tab切换，以改变地址hash值
+    element.on('tab(test1)', function(){
+        location.hash = 'test1='+ this.getAttribute('lay-id');
+    });
+
+    table.render({
+        elem: '#queryResult'
+        , data: [] //数据接口
+        , page: true //开启分页
+        , cols: []
+    });
 });

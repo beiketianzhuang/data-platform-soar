@@ -23,7 +23,7 @@
     </fieldset>
     <div style="padding: 20px; background-color: #F2F2F2;">
         <div class="layui-row layui-col-space15">
-            <div class="layui-col-md3" >
+            <div class="layui-col-md3">
                 <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
                     <div class="layui-card">
                         <div class="layui-card-header">数据库
@@ -38,7 +38,8 @@
                                 <select lay-search lay-filter="get_tables">
                                     <!--<option value="" >请选择数据库</option>-->
                                     <div th:each="schemaResp:${schemaResps}">
-                                        <option th:value="${schemaResp.schema}" value="S00202"><span th:text="${schemaResp.schema}">数据库</span></option>
+                                        <option th:value="${schemaResp.schema}" value="S00202"><span
+                                                th:text="${schemaResp.schema}">数据库</span></option>
 
                                     </div>
                                 </select>
@@ -46,15 +47,16 @@
                         </div>
                         <!--表-->
                         <div id="table_refresh" style="margin-left:15px;overflow:scroll;" th:fragment="table_refresh">
-                            <div th:each="table:${#lists.size(schemaResps) == 0} ? ${schemaResps} : ${schemaResps[0].tables}" >
-                                <i class="layui-icon layui-icon-table" style="font-size: 20px; color: #009688;"><span th:text="${table.key}"></span></i>
+                            <div th:each="table:${#lists.size(schemaResps) == 0} ? ${schemaResps} : ${schemaResps[0].tables}">
+                                <i class="layui-icon layui-icon-table" style="font-size: 20px; color: #009688;"><span
+                                        th:text="${table.key}"></span></i>
                             </div>
                         </div>
 
                         <!--<div id="table_refresh" style="margin-left: 15px;overflow:scroll;"-->
-                             <!--th:each="table:${schemaResp?.tables}" th:fragment="table_refresh">-->
-                            <!--<i class="layui-icon layui-icon-table" style="font-size: 20px; color: #009688;"><span-->
-                                    <!--th:text="${table.key}"></span></i>-->
+                        <!--th:each="table:${schemaResp?.tables}" th:fragment="table_refresh">-->
+                        <!--<i class="layui-icon layui-icon-table" style="font-size: 20px; color: #009688;"><span-->
+                        <!--th:text="${table.key}"></span></i>-->
                         <!--</div>-->
                         <hr>
                     </div>
@@ -71,7 +73,7 @@
                         <hr>
                         <button style="margin-right: 10px" id="sendSql" onclick="sendSql();" class="layui-btn">分析
                         </button>
-                        <button style="margin-right: 10px" id="send" onclick="" class="layui-btn">查询
+                        <button style="margin-right: 10px" id="send" onclick="executeSql()" class="layui-btn">查询
                         </button>
                     </div>
                 </div>
@@ -80,20 +82,26 @@
                 <div class="layui-card">
                     <!--<div class="layui-card-header"></div>-->
                     <div class="layui-card-body">
-                        <div class="layui-tab layui-tab-card"
-                             style="background-color: #040404;width: 100%;height: 400px;overflow:scroll;">
+                        <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
                             <ul class="layui-tab-title">
-                                <li>分析结果</li>
+                                <li class="layui-this" lay-id="verfiyResult">分析结果</li>
+                                <li lay-id="queryResult">查询结果</li>
                             </ul>
-                            <div class="layui-tab-content">
-                                <div class="layui-tab-item layui-show">
-                                    <div id="response" style="color: white">
+                            <!--background-color: #040404;-->
+                            <div class="layui-tab-content" style="width: 100%;height: 400px;">
+                                <div class="layui-tab-item layui-show"
+                                     style="color: white;background-color: #040404;overflow:scroll;height: 400px;"
+                                     id="response">
 
-                                    </div>
+                                </div>
+                                <div class="layui-tab-item">
+                                    <table id="queryResult" lay-filter="test"></table>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -175,6 +183,21 @@
         var sql = editor.getValue();
         ws.send(sql);
         console.log(ws);
+    }
+
+    function executeSql() {
+        var sql = editor.getValue();
+        //获取数据库
+        var schema = $('.layui-form-select .layui-this').last().html();
+        if (schema === '' || schema === undefined || schema === null) {
+            alert("请选择数据库");
+            return;
+        }
+        if (sql === '') {
+            alert("请输入sql");
+            return;
+        }
+        ws.send(schema + ":::" + sql);
     }
 
 </script>

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -66,9 +66,13 @@ public class JdbcTemplate {
         try {
             long startTime = System.currentTimeMillis();
             List<Map<String, Object>> result = JdbcUtils.executeQuery(dataSource, sql);
+            LinkedList metaData = new LinkedList();
+            Map<String, Object> map = result.get(0);
+            map.forEach((key, value) -> metaData.addLast(key));
+
             long endTime = System.currentTimeMillis();
-            return JdbcResultResp.builder().queryResultMsg(SUCCESS.value).queryStatus(SUCCESS).result(result).queryTimeInMs(endTime - startTime).build();
-        } catch (SQLException e) {
+            return JdbcResultResp.builder().queryResultMsg(SUCCESS.value).resultMeta(metaData).queryStatus(SUCCESS).result(result).queryTimeInMs(endTime - startTime).build();
+        } catch (Exception e) {
             log.error("执行sql失败 sql:{}", sql, e);
             return JdbcResultResp.builder().queryResultMsg(FAILURE.value).queryStatus(FAILURE).queryErrorMsg(e.getMessage()).build();
         }
