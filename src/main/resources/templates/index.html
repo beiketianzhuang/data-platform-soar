@@ -53,11 +53,6 @@
                             </div>
                         </div>
 
-                        <!--<div id="table_refresh" style="margin-left: 15px;overflow:scroll;"-->
-                        <!--th:each="table:${schemaResp?.tables}" th:fragment="table_refresh">-->
-                        <!--<i class="layui-icon layui-icon-table" style="font-size: 20px; color: #009688;"><span-->
-                        <!--th:text="${table.key}"></span></i>-->
-                        <!--</div>-->
                         <hr>
                     </div>
                 </div>
@@ -108,13 +103,13 @@
     </div>
 </div>
 <div id="form"
-     style="padding: 50px; height: 300px;width: 100%; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 400;"
+     style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 400;"
      hidden>
     <form id="sub" class="layui-form" action="/schema" lay-filter="example" method="post">
         <div class="layui-form-item">
             <label class="layui-form-label">地址：</label>
             <div class="layui-input-block">
-                <input type="text" name="address" lay-verify="title" autocomplete="off" placeholder="请输入地址"
+                <input type="text" name="address" lay-verify="title" autocomplete="off" placeholder="请输入数据库地址"
                        class="layui-input">
             </div>
         </div>
