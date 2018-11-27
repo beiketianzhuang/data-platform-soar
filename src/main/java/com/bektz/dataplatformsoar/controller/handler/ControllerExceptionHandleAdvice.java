@@ -28,4 +28,11 @@ public class ControllerExceptionHandleAdvice {
         }
         return new ResponseEntity<>(genericResponse, HttpStatus.valueOf(e.getStatus()));
     }
+
+    @ExceptionHandler
+    public ResponseEntity<GenericResponse> handleException(Exception e) {
+        GenericResponse genericResponse = GenericResponse.builder().code(500).status(500).message("系统繁忙！请稍后再试").build();
+        return new ResponseEntity<>(genericResponse, HttpStatus.valueOf(500));
+    }
+
 }

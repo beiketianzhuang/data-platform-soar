@@ -29,8 +29,11 @@ layui.use(['form', 'layer','element','table'], function () { //独立版的layer
                             layer.msg(data.message, {
                                 time: 2000,
                             });
-                            layer.close(index)
-                            $('#schema_refresh').load("/schemas/all");
+                            layer.close(index);
+                            // console.log(JSON.parse(JSON.stringify($('#sub').serializeObject())).schema);
+                            // $('.layui-anim.layui-anim-upbit').append('<dd lay-value="'+JSON.parse(JSON.stringify($('#sub').serializeObject())).schema+'" class>'+JSON.parse(JSON.stringify($('#sub').serializeObject())).schema+'</dd>')
+                            // $('#schema_refresh').append('<option value="'+JSON.parse(JSON.stringify($('#sub').serializeObject())).schema+'">'+JSON.parse(JSON.stringify($('#sub').serializeObject())).schema+'</option>');
+                            window.location.reload()
                         },
                         error: function (e, data) {
                             console.log(e.responseJSON.message)

@@ -27,6 +27,7 @@ public class DataSourceManager {
         dataSource.setMaxActive(2);
         dataSource.setTestOnBorrow(true);
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setQueryTimeout(10);
         try (Connection ignored = dataSource.getConnection(1000)) {
             dataSourceMap.put(schemaReq.getSchema(), dataSource);
         } catch (Exception e) {

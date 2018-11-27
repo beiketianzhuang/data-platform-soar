@@ -53,7 +53,7 @@ function showQueryResult(message) {
     var metas = [];
 
     for (var i = 0; i < JSON.parse(message).resultMeta.length; i++) {
-        var meta = {field: JSON.parse(message).resultMeta[i], title: JSON.parse(message).resultMeta[i], width: 80,};
+        var meta = {field: JSON.parse(message).resultMeta[i], title: JSON.parse(message).resultMeta[i]};
         metas[i] = meta;
         console.log(meta);
     }

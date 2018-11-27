@@ -1,20 +1,17 @@
 package com.bektz.dataplatformsoar.service;
 
-import com.bektz.dataplatformsoar.repository.SecretColumnRepository;
 import com.bektz.dataplatformsoar.req.SchemaReq;
 import com.bektz.dataplatformsoar.req.SqlVerifyReq;
 import com.bektz.dataplatformsoar.resp.JdbcResultResp;
 import com.bektz.dataplatformsoar.resp.SchemaResp;
 import com.bektz.dataplatformsoar.service.jdbc.DataSourceManager;
 import com.bektz.dataplatformsoar.service.jdbc.JdbcTemplate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SchemaService {
@@ -25,12 +22,22 @@ public class SchemaService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-//    @Autowired
-//    private SecretColumnRepository secretColumnRepository;
-
 
     public void addSchema(SchemaReq schemaReq) {
         dataSourceManager.initDataSource(schemaReq);
+    }
+
+    public Map<String, List<String>> tablesAndSchemas(String schema) {
+        Set<String> schemas = dataSourceManager.getDataSourceMap().keySet();
+        Map<String, List<String>> items = new HashMap<>(2);
+        if (StringUtils.isBlank(schema)) {
+            items.put("tables", new ArrayList<>());
+        }
+        if (!StringUtils.isBlank(schema)) {
+            items.put("tables", jdbcTemplate.allTablesInSchema(schema));
+        }
+        items.put("schemas", new ArrayList<>(schemas));
+        return items;
     }
 
     public List<SchemaResp> getSchemaResps() {
@@ -64,24 +71,6 @@ public class SchemaService {
         DataSource dataSource = dataSourceMap.get(sqlVerifyReq.getSchema());
 
         //todo 对敏感字段做脱敏查询
-//        DruidSqlParser druidSqlParser = new DruidSqlParser();
-//        Set<ColumnItem> columnItems = druidSqlParser.parserRealMetaData(sqlVerifyReq.getSql());
-//        Map<String, List<SecretColumn>> secretColumnMaps = new HashMap<>(columnItems.size());
-//        Map<String,String> secretColumnAndAlias = new HashMap<>(columnItems.size());
-//        for (ColumnItem columnItem : columnItems) {
-//            List<SecretColumn> secretColumnList = secretColumnMaps.get(columnItem.getTableName());
-//            if (CollectionUtils.isEmpty(secretColumnList)) {
-//                List<SecretColumn> secretColumns = secretColumnRepository.getSecretColumnsByTableAndSchemaName(columnItem.getTableName(), sqlVerifyReq.getSchema());
-//                secretColumnMaps.put(columnItem.getTableName(), secretColumns);
-//            }
-//            if (!CollectionUtils.isEmpty(secretColumnList)) {
-//                secretColumnList.forEach(secretColumn -> {
-//                    if (secretColumn.getColumn().equals(columnItem.getColumnName())) {
-//
-//                    }
-//                });
-//            }
-//        }
         JdbcResultResp jdbcResultResp = jdbcTemplate.executeSql(dataSource, sqlVerifyReq.getSql());
         return jdbcResultResp;
     }
