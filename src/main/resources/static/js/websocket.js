@@ -51,7 +51,26 @@ var data = [];
 function showQueryResult(message) {
     data = JSON.parse(message).result;
     var metas = [];
+    var status = JSON.parse(message).queryStatus;
+    if ("FAILURE" === status) {
 
+        layer.prompt({
+            formType: 2,
+            value: JSON.parse(message).queryErrorMsg,
+            title: '错误提示',
+            area: ['600px', '200px'] //自定义文本域宽高
+        }, function(value, index, elem){
+            layer.close(1);
+            layer.close(2)
+        });
+
+        // layui.use('layer', function(){
+        //     var layer = layui.layer;
+        //     layer.msg(JSON.parse(message).queryErrorMsg);
+        // });
+        return;
+        // alert();
+    }
     for (var i = 0; i < JSON.parse(message).resultMeta.length; i++) {
         var meta = {field: JSON.parse(message).resultMeta[i], title: JSON.parse(message).resultMeta[i]};
         metas[i] = meta;
