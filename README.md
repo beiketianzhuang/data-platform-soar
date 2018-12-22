@@ -2,6 +2,11 @@
 
 ## 介绍
 基于小米开源工具soar的java应用（sql审核平台），本项目是一个简单的spring boot应用，前端是采用前端开源框架layui，前端与后端的通信采用的是websocket方式
+```txt
+1.可以动态添加数据库，对指定表进行数据查询(没有对查询数据量没有限制)
+2.集成soar，可以对平日的sql进行审核分析，规范sql的编写
+3.通过druid对sql进行解析，可以对查询表做屏蔽敏感字段（需要完善）
+```
 
 ### 运行
 
@@ -35,7 +40,9 @@
 通过 http://localhost:8080 访问
 ```
 
+
 ### DEMO
 ![Aaron Swartz](https://github.com/beiketianzhuang/data-platform-verfiy/blob/master/demo1.jpg)
 ![Aaron Swartz](https://github.com/beiketianzhuang/data-platform-verfiy/blob/master/demo2.jpg)
 ![Aaron Swartz](https://github.com/beiketianzhuang/data-platform-verfiy/blob/master/demo3.jpg)
+![Aaron Swartz](https://github.com/beiketianzhuang/data-platform-verfiy/blob/master/demo4.jpg)
