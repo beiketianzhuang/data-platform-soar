@@ -83,6 +83,8 @@
                         </button>
                         <button style="margin-right: 10px" id="send" onclick="executeSql()" class="layui-btn">查询
                         </button>
+                        <button style="margin-right: 10px" id="parser" onclick="columnParser()" class="layui-btn">解析
+                        </button>
                     </div>
                 </div>
             </div>
@@ -94,6 +96,7 @@
                             <ul class="layui-tab-title">
                                 <li class="layui-this" lay-id="verfiyResult">分析结果</li>
                                 <li lay-id="queryResult">查询结果</li>
+                                <li lay-id="columnParser">解析结果</li>
                             </ul>
                             <!--background-color: #040404;-->
                             <div class="layui-tab-content" style="width: 100%;height: 400px;overflow:scroll">
@@ -104,6 +107,9 @@
                                 </div>
                                 <div class="layui-tab-item" style="overflow:scroll">
                                     <table id="queryResult" lay-filter="test"></table>
+                                </div>
+                                <div class="layui-tab-item" style="overflow:scroll">
+                                    <table id="columnParser" lay-filter="test1"></table>
                                 </div>
                             </div>
                         </div>
@@ -206,6 +212,15 @@
             return;
         }
         ws.send(schema + ":::" + sql);
+    }
+
+    function columnParser() {
+        var sql = editor.getValue();
+        if (sql === '') {
+            alert("请输入sql");
+            return;
+        }
+        ws.send("===" + sql);
     }
 
 </script>

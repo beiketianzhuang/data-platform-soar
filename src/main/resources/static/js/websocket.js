@@ -7,6 +7,10 @@ ws.onmessage = function (message) {
     if (JSON.parse(message.data).queryStatus !== null && JSON.parse(message.data).queryStatus !== undefined) {
         showQueryResult(message.data);
     }
+
+    if (JSON.parse(message.data).parserSql !== null && JSON.parse(message.data).parserSql !== undefined || JSON.parse(message.data).error != undefined) {
+        showParserSql(message.data);
+    }
 };
 
 
@@ -59,17 +63,11 @@ function showQueryResult(message) {
             value: JSON.parse(message).queryErrorMsg,
             title: '错误提示',
             area: ['600px', '200px'] //自定义文本域宽高
-        }, function(value, index, elem){
+        }, function (value, index, elem) {
             layer.close(1);
             layer.close(2)
         });
-
-        // layui.use('layer', function(){
-        //     var layer = layui.layer;
-        //     layer.msg(JSON.parse(message).queryErrorMsg);
-        // });
         return;
-        // alert();
     }
     for (var i = 0; i < JSON.parse(message).resultMeta.length; i++) {
         var meta = {field: JSON.parse(message).resultMeta[i], title: JSON.parse(message).resultMeta[i]};
@@ -89,4 +87,25 @@ function showQueryResult(message) {
     });
     var ele = layui.element;
     ele.tabChange('docDemoTabBrief', 'queryResult');
+}
+
+function showParserSql(message) {
+    var error = JSON.parse(message).error;
+    if (undefined !== error) {
+        layui.use('layer', function () {
+            var layer = layui.layer;
+            layer.msg(JSON.parse(message).error);
+        });
+        return;
+    }
+    var response = $("#columnParser");
+    console.log(JSON.parse(message));
+    ;
+    var msg = '';
+    for (var i = 0; i < JSON.parse(message).parserSql.length; i++) {
+        msg += JSON.parse(message).parserSql[i] + "<br>";
+    }
+    response.html(msg);
+    var ele = layui.element;
+    ele.tabChange('docDemoTabBrief', 'columnParser');
 }
