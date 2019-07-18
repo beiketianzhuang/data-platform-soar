@@ -16,7 +16,7 @@
 
 2.进入项目主目录
 
-3.mvn package dependency:copy
+3.mvn package -Dmaven.test.skip=true  dependency:copy
 
 4.cd dev
 
